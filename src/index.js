@@ -2,7 +2,9 @@ const express = require("express");
 
 const app = express();
 
-// app.use(express.json());
+app.use(express.json());
+app.set('view engine','ejs');
+
 
 // let institute = [
 //   {
@@ -67,23 +69,25 @@ const app = express();
 //   }
 // ];
 
-// app.get("/", (req, res) => {
-//   console.log("Hello World in Node Js");
+app.get("/", (req, res) => {
+  res.render("index",{text : 'ok'})
+  // console.log("Hello World in Node Js");
+  // res.download('./src/index.js')
 
-//   let fData = institute
-//     .map(v => {
-//       return {
-//         id: v.id,
-//         name: v.name,
-//         seat: v.seat.map(v =>
-//           Object.fromEntries(Object.entries(v).filter(v => v[1] > 0))
-//         )
-//       };
-//     })
-//     .filter(v => Object.keys(v.seat[0]).length > 0);
+  // let fData = institute
+  //   .map(v => {
+  //     return {
+  //       id: v.id,
+  //       name: v.name,
+  //       seat: v.seat.map(v =>
+  //         Object.fromEntries(Object.entries(v).filter(v => v[1] > 0))
+  //       )
+  //     };
+  //   })
+  //   .filter(v => Object.keys(v.seat[0]).length > 0);
 
-//   res.status(200).json({ data: fData });
-// });
+  // res.status(200).json({ data: fData });
+});
 
 // app.post("/", (req, res) => {
 //   let inputData = req.body;
@@ -165,6 +169,13 @@ const app = express();
 const routes = require('./routes/v1/index');
 
 app.use('/v1',routes);
+
+
+app.use((err,req,res)=> {
+  console.log(err);
+
+  req.send({Message : "Something Went Wrong"});
+})
 
 
 app.listen(3000, () => {
