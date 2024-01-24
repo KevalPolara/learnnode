@@ -15,7 +15,7 @@ router.get("/:userId",(req,res) => {
     res.send(`Then this function will be called After , ${req.user.name}`);
 })
 
-router.post('/', (req,res) => {
+router.post('/register', (req,res) => {
     console.log(req.body);
     const response = userSchema.parse(req.body);
 

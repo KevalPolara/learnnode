@@ -10,7 +10,7 @@ const variantSchema = mongoose.Schema({
        require : true
     },
     price : {
-        type :  String,
+        type :  Number,
         require : true
     },
     images : {
@@ -18,7 +18,7 @@ const variantSchema = mongoose.Schema({
         require : true 
     },
 
-    strocks : {
+    stocks : {
         type : Number,
         require  :true
     },

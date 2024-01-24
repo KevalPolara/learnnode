@@ -18,7 +18,33 @@ const productSchema = mongoose.Schema({
     subcategory_id : {
         type : mongoose.Types.ObjectId,
         ref : 'subCategory'
-    }
+    },
+    variant : [
+     {
+        color : {
+            type : String
+        },
+        size : {
+            type : String
+        },
+        price : {
+            type : Number,
+            require : true
+        },
+        stock : {
+            type : Number,
+        },
+        ram : {
+            type : String
+        },
+        rom : {
+            type : String
+        },
+        images : {
+            type : String
+        }
+     },
+]
 
 },
 

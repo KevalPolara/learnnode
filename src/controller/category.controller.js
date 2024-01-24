@@ -20,6 +20,87 @@ const createCategory = async(req,res) => {
     }
 }
 
+
+const getCountSubCategories = async(req,res) => {
+    try{
+        const response =  await categoryService.getCountSubCategories();
+        console.log(response);
+
+        if(!response){
+            throw new Error('get Count SubCategory Error');
+        }
+
+        res.status(200).json({
+            success : 'true',
+            massage : 'get Count SubCategory',
+            data : response
+        })
+        
+    }catch(error){
+        console.log(error.message);
+    }
+}
+
+const getCountActive = async(req,res) => {
+    try{
+        const response =  await categoryService.getCountActive();
+        console.log(response);
+
+        if(!response){
+            throw new Error('Get-Active Category Error');
+        }
+
+        res.status(200).json({
+            success : 'true',
+            massage : 'Get-Active Category',
+            data : response
+        })
+        
+    }catch(error){
+        console.log(error.message);
+    }
+}
+
+const getMostProduct = async(req,res) => {
+    try{
+        const response =  await categoryService.getMostProduct();
+        console.log(response);
+
+        if(!response){
+            throw new Error('Get-Most Product Error');
+        }
+
+        res.status(200).json({
+            success : 'true',
+            massage : 'Get-Most Product',
+            data : response
+        })
+        
+    }catch(error){
+        console.log(error.message);
+    }
+}
+
+const getaverageProductsCategory = async(req,res) => {
+    try{
+        const response =  await categoryService.getaverageProductsCategory();
+        console.log(response);
+
+        if(!response){
+            throw new Error('Get-Average Product Error');
+        }
+
+        res.status(200).json({
+            success : 'true',
+            massage : 'Get-Average Product',
+            data : response
+        })
+        
+    }catch(error){
+        console.log(error.message);
+    }
+}
+
 const getCategory = async(req,res) => {
     try{
         const response = await categoryService.getCategory();
@@ -116,5 +197,9 @@ module.exports = {
     getCategory,
     deleteCategory,
     editCategory,
-    getCategoryById
+    getCategoryById,
+    getCountActive,
+    getMostProduct,
+    getaverageProductsCategory,
+    getCountSubCategories
 }

@@ -19,6 +19,31 @@ router.get(
 );
 
 router.get(
+  "/count-active",
+  validate(categoryValidation.getCategory),
+  categoryController.getCountActive
+)
+
+
+router.get(
+  "/most-products",
+  validate(categoryValidation.getCategory),
+  categoryController.getMostProduct
+)
+
+router.get(
+  "/count-subcategories",
+  validate(categoryValidation.getCategory),
+  categoryController.getCountSubCategories
+)
+
+router.get(
+  "/average-productscatgory",
+  validate(categoryValidation.getCategory),
+  categoryController.getaverageProductsCategory
+)
+
+router.get(
   "/get-category/:id",
   validate(categoryValidation.getCategory),
   getCategoryById
