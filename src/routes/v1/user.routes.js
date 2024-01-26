@@ -1,5 +1,8 @@
 const express = require('express');
 const zod = require('zod');
+const validate = require('../../middleware/validate');
+const { userRegisteValidation } = require('../../validation');
+const { createUser, loginUser } = require('../../controller/user.controller');
 const router = express.Router();
 
 
@@ -11,18 +14,21 @@ const userSchema = zod.object({
     country : zod.literal("in").or(zod.literal("ca")).or(zod.literal("aus"))
 })
 
-router.get("/:userId",(req,res) => {
+router.get("/:userId",(req,res, ) => {
     res.send(`Then this function will be called After , ${req.user.name}`);
 })
 
-router.post('/register', (req,res) => {
-    console.log(req.body);
-    const response = userSchema.parse(req.body);
+router.post(
+    '/register',
+    validate(userRegisteValidation.registerUser),
+    createUser
+)
 
-    console.log(response);
-
-    res.send(response);
-}) 
+router.post(
+    '/login',
+    validate(userRegisteValidation.loginUser),
+    loginUser
+)
 
 // const data = [
 //     { 

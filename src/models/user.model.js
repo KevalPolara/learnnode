@@ -23,6 +23,10 @@ const userSchema = mongoose.Schema({
         type : String,
         require : true,
     },
+    roll : {
+        type : String,
+        require : true,
+    },
     refresh_token : {
         type : String
     },
@@ -30,7 +34,6 @@ const userSchema = mongoose.Schema({
         type : Boolean,
         default : true,
     }
-
 },
 
 {
