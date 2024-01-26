@@ -3,6 +3,7 @@ const zod = require('zod');
 const validate = require('../../middleware/validate');
 const { userRegisteValidation } = require('../../validation');
 const { createUser, loginUser } = require('../../controller/user.controller');
+const { userController } = require('../../controller');
 const router = express.Router();
 
 
@@ -21,13 +22,13 @@ router.get("/:userId",(req,res, ) => {
 router.post(
     '/register',
     validate(userRegisteValidation.registerUser),
-    createUser
+    userController.createUser
 )
 
 router.post(
     '/login',
     validate(userRegisteValidation.loginUser),
-    loginUser
+    userController.loginUser
 )
 
 // const data = [
@@ -51,9 +52,6 @@ router.post(
 
 //     next();
 // })
-
-
-
 
 
 // router.get('/', (req,res) => {

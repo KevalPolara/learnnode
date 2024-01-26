@@ -3,10 +3,12 @@ const bcrypt = require("bcrypt");
 const { userService } = require("../services");
 const jwt = require("jsonwebtoken");
 
-const accessRefreshToken = async userId => {
-  const ExistUser = await user.filterOne({_id: userId});
 
-  const accessToken = jwt.sign(
+const accessRefreshToken = async userId => {
+
+  const ExistUser = await user.findOne({ _id: userId });
+
+  const accessToken = await jwt.sign(
     {
       _id: ExistUser.id,
       name: ExistUser.user_name,
@@ -18,23 +20,20 @@ const accessRefreshToken = async userId => {
     }
   );
 
-  const refreshToken = jwt.sign(
+  const refreshToken = await jwt.sign(
     {
       _id: ExistUser.id,
-      name: ExistUser.name,
-      email_id: ExistUser.email_id
     },
     `${process.env.ACCESS_TOKEN_KEY}`,
     {
       expiresIn: `${process.env.ACCESS_TOKEN_EXPIRY}`
     }
   );
-  
-  ExistUser.refresh_token = refreshToken
-  ExistUser.save()
 
+  ExistUser.refresh_token = refreshToken;
+  ExistUser.save();
 
-  return {accessToken ,refreshToken}
+  return { accessToken, refreshToken };
 };
 
 const createUser = async (req, res) => {
@@ -42,7 +41,7 @@ const createUser = async (req, res) => {
     const { mobile_no, email_id, password } = req.body;
 
     const existUser = await user.findOne({
-      $or: [{ email_id }, { password }]
+      $or: [{email_id}, {password}]
     });
 
     if (existUser) {
@@ -50,6 +49,8 @@ const createUser = async (req, res) => {
         message: "Already User Exist"
       });
     }
+
+    // encrypted password Bani Jay
 
     const bcryptPassword = await bcrypt.hash(password, 10);
 
@@ -85,35 +86,46 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email_id, password } = req.body;
-    console.log(req.body);
+    const {email_id, password} = req.body;
 
-    const loginuser = await user.findOne({
-      $or: [{email_id, password}]
-    });
+    const loginuser = await user.findOne({email_id});
+
+    console.log(loginuser);
 
     if (!loginuser) {
-      res.status(500).json({
-        message: "Invalid Email  Or Password"
+      return res.status(400).json({
+        message: "User Not Found"
       });
     }
 
-    const checkPassword = bcrypt.compare(password, loginuser.password);
+    const checkPassword = await bcrypt.compare(password, loginuser.password);
+    console.log(checkPassword);
 
     if (!checkPassword) {
-      res.status(500).json({
+      return res.status(500).json({
         message: "Invalid Email  Or Password"
       });
     }
 
-  const  {accessToken ,refreshToken} = await accessRefreshToken(loginuser.id);
+    const {accessToken, refreshToken} = await accessRefreshToken(
+      loginuser._id
+    );
 
-   console.log(accessToken ,refreshToken);
+    const userdata = await user
+      .findOne({_id: loginuser._id})
+      .select("-password -refreshToken");
+
+    res.status(200).json({
+      sucess: true,
+      message: "Login Succesfully",
+      data: { ...userdata, access_token: accessToken }
+    });
+
 
   } catch (error) {
     res.status(500).json({
-      message : "Invalid Email Or Password"
-    })
+      message: error.message
+    });
   }
 };
 
