@@ -1,6 +1,41 @@
 const user = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const { userService } = require("../services");
+const jwt = require("jsonwebtoken");
+
+const accessRefreshToken = async userId => {
+  const ExistUser = await user.filterOne({_id: userId});
+
+  const accessToken = jwt.sign(
+    {
+      _id: ExistUser.id,
+      name: ExistUser.user_name,
+      email_id: ExistUser.email_id
+    },
+    `${process.env.ACCESS_TOKEN_KEY}`,
+    {
+      expiresIn: `${process.env.ACCESS_TOKEN_EXPIRY}`
+    }
+  );
+
+  const refreshToken = jwt.sign(
+    {
+      _id: ExistUser.id,
+      name: ExistUser.name,
+      email_id: ExistUser.email_id
+    },
+    `${process.env.ACCESS_TOKEN_KEY}`,
+    {
+      expiresIn: `${process.env.ACCESS_TOKEN_EXPIRY}`
+    }
+  );
+  
+  ExistUser.refresh_token = refreshToken
+  ExistUser.save()
+
+
+  return {accessToken ,refreshToken}
+};
 
 const createUser = async (req, res) => {
   try {
@@ -48,37 +83,39 @@ const createUser = async (req, res) => {
   }
 };
 
-const loginUser = async(req,res) => {
-  try{
-
-    const {email_id , password} = req.body;
+const loginUser = async (req, res) => {
+  try {
+    const { email_id, password } = req.body;
+    console.log(req.body);
 
     const loginuser = await user.findOne({
-      $or : [{email_id, password}]
+      $or: [{email_id, password}]
+    });
+
+    if (!loginuser) {
+      res.status(500).json({
+        message: "Invalid Email  Or Password"
+      });
+    }
+
+    const checkPassword = bcrypt.compare(password, loginuser.password);
+
+    if (!checkPassword) {
+      res.status(500).json({
+        message: "Invalid Email  Or Password"
+      });
+    }
+
+  const  {accessToken ,refreshToken} = await accessRefreshToken(loginuser.id);
+
+   console.log(accessToken ,refreshToken);
+
+  } catch (error) {
+    res.status(500).json({
+      message : "Invalid Email Or Password"
     })
-
-    if(!loginuser){
-      res.status(500).json({
-        message : "Invalid Email  Or Password"
-      })
-    }
-
-    const checkPassword = bcrypt.compare(password , loginuser.password)
-
-    if(!checkPassword){
-      res.status(500).json({
-        message : "Invalid Email  Or Password"
-      })
-    }
-    
-
-    
-
-
-  }catch(error){
-
   }
-}
+};
 
 module.exports = {
   createUser,
