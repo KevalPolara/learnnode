@@ -3,18 +3,20 @@ const bcrypt = require("bcrypt");
 const { userService } = require("../services");
 const jwt = require("jsonwebtoken");
 
-
 const accessRefreshToken = async userId => {
-
   const ExistUser = await user.findOne({ _id: userId });
+  console.log(ExistUser);
 
   const accessToken = await jwt.sign(
     {
       _id: ExistUser.id,
       name: ExistUser.user_name,
-      email_id: ExistUser.email_id
+      email_id: ExistUser.email_id,
+      roll : ExistUser.roll
     },
+
     `${process.env.ACCESS_TOKEN_KEY}`,
+
     {
       expiresIn: `${process.env.ACCESS_TOKEN_EXPIRY}`
     }
@@ -22,7 +24,7 @@ const accessRefreshToken = async userId => {
 
   const refreshToken = await jwt.sign(
     {
-      _id: ExistUser.id,
+      _id: ExistUser.id
     },
     `${process.env.ACCESS_TOKEN_KEY}`,
     {
@@ -41,7 +43,7 @@ const createUser = async (req, res) => {
     const { mobile_no, email_id, password } = req.body;
 
     const existUser = await user.findOne({
-      $or: [{email_id}, {password}]
+      $or: [{ email_id }, { password }]
     });
 
     if (existUser) {
@@ -86,9 +88,9 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const {email_id, password} = req.body;
+    const { email_id, password } = req.body;
 
-    const loginuser = await user.findOne({email_id});
+    const loginuser = await user.findOne({ email_id });
 
     console.log(loginuser);
 
@@ -107,21 +109,28 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const {accessToken, refreshToken} = await accessRefreshToken(
+    const { accessToken, refreshToken } = await accessRefreshToken(
       loginuser._id
     );
 
     const userdata = await user
-      .findOne({_id: loginuser._id})
+      .findOne({ _id: loginuser._id })
       .select("-password -refreshToken");
 
-    res.status(200).json({
-      sucess: true,
-      message: "Login Succesfully",
-      data: { ...userdata, access_token: accessToken }
-    });
+    const option = {
+      httpOnly: true,
+      secure: true
+    };
 
-
+    res
+      .status(200)
+      .cookie("accesstoken", accessToken, option)
+      .cookie("refreshtoken", refreshToken, option)
+      .json({
+        sucess: true,
+        message: "Login Succesfully",
+        data: { ...userdata, access_token: accessToken }
+      });
   } catch (error) {
     res.status(500).json({
       message: error.message

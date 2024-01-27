@@ -9,6 +9,7 @@ const {
   getCategoryById
 } = require("../../controller/category.controller");
 const { categoryController } = require("../../controller");
+const auth = require("../../middleware/auth");
 
 const router = express.Router();
 
@@ -52,6 +53,7 @@ router.get(
 router.post(
   "/create-category",
   validate(categoryValidation.createCategory),
+  auth(['admin', 'seller']),
   createCategory
 );
 
