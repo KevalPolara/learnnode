@@ -1,11 +1,13 @@
-const user = require("../models/user.model");
+const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const { userService } = require("../services");
 const jwt = require("jsonwebtoken");
+const { uploadFile } = require("../utils/cloudinary");
 
 const accessRefreshToken = async userId => {
-  const ExistUser = await user.findOne({ _id: userId });
+  const ExistUser = await User.findOne({ _id: userId });
   console.log(ExistUser);
+
 
   const accessToken = await jwt.sign(
     {
@@ -38,11 +40,60 @@ const accessRefreshToken = async userId => {
   return { accessToken, refreshToken };
 };
 
+const genterateNewToken = async (req,res) => {
+  try {
+
+    const Token = req.body?.refreshtoken || req.cookies?.refreshtoken
+
+    console.log(Token);
+
+    if(!Token){
+     return res.status(401).json({
+        message : "Token is Required"
+      })
+    }
+
+    const user = await User.findOne({refresh_token : Token}).select("-password , -refresh_token");
+
+    if(!user){
+      return  res.status(404).json({
+        message : "User Not Found!"
+      })
+    }
+
+    const {accessToken ,refreshToken} = await accessRefreshToken(user._id)
+    console.log(accessToken , refreshToken);
+
+    const userData = await User.findOne(user._id).select("-password, -refresh_token");
+
+    console.log(userData, "Keval Polara");
+
+    if(userData){
+      res.status(200).json({
+        success : true,
+        message : "New Token Genereted",
+        data :  {...userData , access_token: accessToken}
+      })
+    }
+ 
+  } catch (error) {
+
+    return res.status(500).json({
+      message : error.message
+    })
+    
+  }
+
+}
+
 const createUser = async (req, res) => {
   try {
-    const { mobile_no, email_id, password } = req.body;
+    const {email_id, password } = req.body;
 
-    const existUser = await user.findOne({
+    const uploadFileData = await uploadFile(req.file.path)
+    console.log(uploadFileData , "Keval Polara");
+
+    const existUser = await User.findOne({
       $or: [{ email_id }, { password }]
     });
 
@@ -50,7 +101,14 @@ const createUser = async (req, res) => {
       return res.status(500).json({
         message: "Already User Exist"
       });
+    }    
+
+    if(!uploadFileData){
+      res.status(500).json({
+        message : "Please Upload File"
+      })
     }
+
 
     // encrypted password Bani Jay
 
@@ -58,7 +116,9 @@ const createUser = async (req, res) => {
 
     const response = await userService.createUser({
       ...req.body,
-      password: bcryptPassword
+      password: bcryptPassword,
+      public_id : uploadFileData.public_id,
+      url : uploadFileData.url
     });
 
     console.log(response);
@@ -68,7 +128,7 @@ const createUser = async (req, res) => {
         message: "Interal Server Error, Please Try Again"
       });
     } else {
-      const filterOne = await user
+      const filterOne = await User
         .findById(response._id)
         .select("-password -bcryptPassword");
 
@@ -90,7 +150,7 @@ const loginUser = async (req, res) => {
   try {
     const { email_id, password } = req.body;
 
-    const loginuser = await user.findOne({ email_id });
+    const loginuser = await User.findOne({ email_id });
 
     console.log(loginuser);
 
@@ -113,7 +173,7 @@ const loginUser = async (req, res) => {
       loginuser._id
     );
 
-    const userdata = await user
+    const userdata = await User
       .findOne({ _id: loginuser._id })
       .select("-password -refreshToken");
 
@@ -140,5 +200,6 @@ const loginUser = async (req, res) => {
 
 module.exports = {
   createUser,
-  loginUser
+  loginUser,
+  genterateNewToken
 };

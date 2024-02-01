@@ -5,6 +5,7 @@ const { userRegisteValidation } = require('../../validation');
 const { createUser, loginUser } = require('../../controller/user.controller');
 const { userController } = require('../../controller');
 const auth = require('../../middleware/auth');
+const { upload } = require('../../middleware/upload');
 const router = express.Router();
 
 
@@ -22,6 +23,7 @@ const userSchema = zod.object({
 
 router.post(
     '/register',
+    upload.single('avatar'),
     validate(userRegisteValidation.registerUser),
     userController.createUser
 )
@@ -32,6 +34,10 @@ router.post(
     userController.loginUser
 )
 
+router.post(
+    '/genterateNewToken',
+    userController.genterateNewToken
+)
 // const data = [
 //     { 
 //         id: 1,
