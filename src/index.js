@@ -2,6 +2,10 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cookieParser = require('cookie-parser')
+const  session = require('express-session')
+const passport = require('passport')
+const {connectGooglePassport , connectFacebookPassport} = require("./utils/passport");
+
 
 dotenv.config();
 
@@ -19,8 +23,15 @@ app.use(cookieParser())
 
 app.use(express.json());
 
-const routes = require("./routes/v1/index");
 
+app.use(require('express-session')({ secret: 'mdfnldgngalngalkg', resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+connectGooglePassport()
+connectFacebookPassport()
+
+const routes = require("./routes/v1/index");
 app.use("/v1", routes);
   
 // app.use((err, req, res) => {

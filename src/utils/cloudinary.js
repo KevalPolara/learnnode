@@ -9,7 +9,7 @@ cloudinary.config({
 
 const uploadFile = async path => {
   try {
-    console.log(path);
+    console.log(path , "Keval Polara");
 
     const result = await cloudinary.uploader.upload(path);
 
@@ -23,21 +23,20 @@ const uploadFile = async path => {
   }
 };
 
-const deleteFile = async(path) => {
-  try {
-    const result = await cloudinary.uploader.destroy(path);
+// const deleteFile = async(path) => {
+//   try {
+//     const result = await cloudinary.uploader.destroy(path);
 
-    console.log(result);
+//     console.log(result);
 
-    return result;
+//     return result;
 
     
-  } catch (error) {
-    console.log(error.message);
-  }
-}
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
 
 module.exports = {
   uploadFile,
-  deleteFile
 };

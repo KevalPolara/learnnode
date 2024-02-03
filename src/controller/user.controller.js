@@ -91,7 +91,6 @@ const createUser = async (req, res) => {
     const {email_id, password } = req.body;
 
     const uploadFileData = await uploadFile(req.file.path)
-    console.log(uploadFileData , "Keval Polara");
 
     const existUser = await User.findOne({
       $or: [{ email_id }, { password }]
@@ -145,6 +144,8 @@ const createUser = async (req, res) => {
     });
   }
 };
+
+
 
 const loginUser = async (req, res) => {
   try {

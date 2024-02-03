@@ -5,19 +5,28 @@ const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, "./public/temp");
   },
+
   filename: function(req, file, cb) {
-    console.log(file);
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    try {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
 
-    const ext = path.extname(file.originalname).toLowerCase();
+      const ext = path.extname(file.originalname).toLowerCase();
 
-    if(ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg" && ext !== ".svg"){
-         throw new Error({message : "Please add png, jpg,jpeg or svg File"});
+      if (!isValidFileType(ext)) {
+        throw new Error("Please add png, jpg, jpeg, or svg File");
+      }
+
+      cb(null, file.fieldname + "-" + uniqueSuffix + ext);
+    } catch (error) {
+      cb(error); // Pass the error to the callback
     }
-
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
   }
 });
+
+function isValidFileType(ext) {
+  const allowedExtensions = [".png", ".jpg", ".jpeg", ".svg"];
+  return allowedExtensions.includes(ext);
+}
 
 const upload = multer({ storage: storage });
 

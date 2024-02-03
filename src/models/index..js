@@ -9,4 +9,4 @@ module.exports.Products = require('./products.model');
 module.exports.Review = require('./review.model');
 module.exports.Seller = require('./seller.model');
 module.exports.User = require('./user.model');
-module.exports.Variant = require('./variant.model');
+module.exports.Variant = require('./variant.model')
