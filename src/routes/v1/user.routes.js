@@ -2,12 +2,13 @@ const express = require("express");
 const zod = require("zod");
 const validate = require("../../middleware/validate");
 const { userRegisteValidation } = require("../../validation");
-const { createUser, loginUser } = require("../../controller/user.controller");
+const { createUser, loginUser, accessRefreshToken } = require("../../controller/user.controller");
 const { userController } = require("../../controller");
 const auth = require("../../middleware/auth");
 const { upload } = require("../../middleware/upload");
 const router = express.Router();
 const passport = require("passport");
+const { sendOtp, verifyOtp } = require("../../utils/twiilo");
 
 const userSchema = zod.object({
   id: zod.number(),
@@ -34,14 +35,33 @@ router.post(
   userController.loginUser
 );
 
+router.post(
+  '/sendotp',
+  sendOtp,
+  function (req,res) {
+    res.status(200).json({message : "Otp Send Succesfully"})
+  } 
+)
+
+router.post(
+  '/verifyotp',
+  verifyOtp,
+)
+
 router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
-  function(req, res) {
+ async function(req, res) {
+
+    console.log(req.isAuthenticated , "isAuthenticated");
+    console.log(req.user , "user" );
+    console.log(req.session , "session");
+    const {refreshToken} = await accessRefreshToken(user._id);
+    res.cookie("RefreshToken" , refreshToken);
     // Successful authentication, redirect home.
-    res.redirect("/");
+    res.send("ok");
   }
 );
 
@@ -62,6 +82,10 @@ router.get(
 router.post("/genterateNewToken", userController.genterateNewToken);
 
 router.delete("/delete-image");
+
+
+
+
 // const data = [
 //     {
 //         id: 1,

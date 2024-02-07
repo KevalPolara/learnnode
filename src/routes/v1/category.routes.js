@@ -29,6 +29,7 @@ router.get(
 router.get(
   "/most-products",
   validate(categoryValidation.getCategory),
+  auth(['admin', 'seller']),
   categoryController.getMostProduct
 )
 

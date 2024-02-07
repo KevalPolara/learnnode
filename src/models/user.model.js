@@ -43,6 +43,9 @@ const userSchema = mongoose.Schema(
     
     url : {
       type : String
+    },
+    googleId : {
+      type : String
     }
 
   },

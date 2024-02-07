@@ -145,8 +145,6 @@ const createUser = async (req, res) => {
   }
 };
 
-
-
 const loginUser = async (req, res) => {
   try {
     const { email_id, password } = req.body;
@@ -202,5 +200,6 @@ const loginUser = async (req, res) => {
 module.exports = {
   createUser,
   loginUser,
-  genterateNewToken
+  genterateNewToken,
+  accessRefreshToken
 };

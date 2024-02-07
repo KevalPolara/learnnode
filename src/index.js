@@ -6,7 +6,6 @@ const  session = require('express-session')
 const passport = require('passport')
 const {connectGooglePassport , connectFacebookPassport} = require("./utils/passport");
 
-
 dotenv.config();
 
 try{
@@ -24,7 +23,7 @@ app.use(cookieParser())
 app.use(express.json());
 
 
-app.use(require('express-session')({ secret: 'mdfnldgngalngalkg', resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'mdfnldgngalngalkg', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
