@@ -9,6 +9,7 @@ const { upload } = require("../../middleware/upload");
 const router = express.Router();
 const passport = require("passport");
 const { sendOtp, verifyOtp } = require("../../utils/twiilo");
+const { sendMail } = require("../../utils/nodemailer");
 
 const userSchema = zod.object({
   id: zod.number(),
@@ -21,6 +22,15 @@ const userSchema = zod.object({
 // router.get("/:userId",(req,res, ) => {
 //     res.send(`Then this function will be called After , ${req.user.name}`);
 // })
+
+
+router.post(
+  '/sendmail',
+  sendMail,
+ function (req,res) {
+  res.status(200).json({message : "Email Send Succesfully"});
+ }
+)
 
 router.post(
   "/register",
@@ -47,6 +57,9 @@ router.post(
   '/verifyotp',
   verifyOtp,
 )
+
+
+
 
 router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 
