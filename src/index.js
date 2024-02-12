@@ -3,7 +3,10 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cookieParser = require('cookie-parser')
 const  session = require('express-session')
-const passport = require('passport')
+const passport = require('passport');
+const cors = require('cors');
+const { connectSocekt } = require("./utils/socket.io");
+
 const {connectGooglePassport , connectFacebookPassport} = require("./utils/passport");
 
 dotenv.config();
@@ -27,6 +30,10 @@ app.use(session({ secret: 'mdfnldgngalngalkg', resave: false, saveUninitialized:
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(cors())
+
+
+connectSocekt()
 connectGooglePassport()
 connectFacebookPassport()
 

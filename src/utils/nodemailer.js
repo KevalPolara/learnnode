@@ -14,6 +14,7 @@ const sendMail = async (req, res) => {
       }
     });
 
+    
     // Read the content of the image file
     const imageContent = fs.readFileSync('src/temp/imageone.jpg');
     const imageContentone = fs.readFileSync('src/temp/imagetwo.jpg');

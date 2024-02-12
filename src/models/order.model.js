@@ -49,10 +49,9 @@ const orderSchema = mongoose.Schema({
 },
 {
     timeStamps : true
-
 }
 )
 
-const order = mongoose.model('order',orderSchema);
+const order = mongoose.model('orders',orderSchema);
 
 module.exports = order;

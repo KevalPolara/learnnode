@@ -10,6 +10,7 @@ const router = express.Router();
 const passport = require("passport");
 const { sendOtp, verifyOtp } = require("../../utils/twiilo");
 const { sendMail } = require("../../utils/nodemailer");
+const { makePdf, generatePdf, generateAndSendPdf, sendMailandPdf } = require("../../utils/pdfMake");
 
 const userSchema = zod.object({
   id: zod.number(),
@@ -30,6 +31,11 @@ router.post(
  function (req,res) {
   res.status(200).json({message : "Email Send Succesfully"});
  }
+)
+
+router.get(
+  '/pdfmake',
+  sendMailandPdf
 )
 
 router.post(
